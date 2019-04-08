@@ -3,21 +3,21 @@ from spotipy.oauth2 import SpotifyClientCredentials
 
 def main():
 
-	parser = open("parodgers99.csv","r")
+	parser = open("parodgers99.csv","r") #Song data used to gather audio features.
 	songs = parser.readlines()
 	parser.close()
-	idfile = open("ids.csv","a")
+	idfile = open("ids.csv","a") #Writing file for audio features
 	prev_artist = ""
 	prev_song = ""
-	original_songs = open("paro.csv","r")
+	original_songs = open("paro.csv","r") #Original list of songs.
 	orig = original_songs.readlines()
 	client_credentials_manager = SpotifyClientCredentials(client_id = "94de76eb590f4dd99204ed1fc4de106a", client_secret = "82567ef281a640bf8fc5421d85840a71")
-	sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+	sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager) 
 	features = []
 	for num, line in enumerate(songs):
-		temp = line.split(",")
+		temp = line.split(",") #Split each fature
 		temp2 = orig[num].split(",")
-		if(prev_artist == temp[0] and prev_song == temp[2]):
+		if(prev_artist == temp[0] and prev_song == temp[2]): #If the song and artist are the same, then don't query Spotify again.
 			idfile.write(str(features[0].get("energy"))+" ")
 			idfile.write(str(features[0].get("liveness"))+" ")
 			idfile.write(str(features[0].get("tempo"))+" ")
@@ -40,7 +40,7 @@ def main():
 		#If the search function fails us, just forget about it.
 		try:
 			id = trackid['tracks']['items'][0]['id']
-		except:
+		except: #Fails in case its missing from Spotify, character errors, etc.
 			continue
 		features = sp.audio_features([id])
 		idfile.write(str(features[0].get("energy"))+" ")
@@ -60,7 +60,7 @@ def main():
 			idfile.write(str(i)+" ")
 		idfile.write("\n")
 		idfile.flush()
-		prev_artist = temp[0]
+		prev_artist = temp[0] #track previous artist and songs for repeat
 		prev_song = temp[2]
 		
 main()
